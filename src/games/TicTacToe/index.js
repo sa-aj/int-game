@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
-import rawData from './rawData';
-import cross from './cross.png';
+import rawData from '../../lib/rawData';
+import cross from '../../images/cross.png';
 
-function GameBegins() {
+function TicTacToe() {
   const [winner,updateWinner] = useState("Draw");
   const [player] = useState([{id:0,rowSum:0,colSum:0},{id:1,rowSum:0,colSum:0}]);
   const [gameState, updateGameState] = useState('active');
@@ -102,9 +102,10 @@ function GameBegins() {
   return(
     <div style={{textAlign:'center'}}>
       <div>Tic Tac Toe</div>
+      <div>Battle game</div>
       {(gameState == 'active')?createMatrix():gameOver()}
     </div>
   )
 }
 
-export default GameBegins;
+export default TicTacToe;
