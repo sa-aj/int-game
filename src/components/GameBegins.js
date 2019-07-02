@@ -1,11 +1,14 @@
 import React from 'react'
-import TicTacToe from '../games/TicTacToe';
-import bgImage from '../images/bg-image.jpeg';
+import { Link } from "react-router-dom";
 function GameBegins() {
-
   return(
-    <div style={{textAlign:'center',}}>
-      <TicTacToe/>
+    <div>
+      <div>
+        - <Link to="/tic-tac-toe">Tic Tac Toe</Link>
+      </div>
+      <div>
+        - <Link to="/battle-game">Battle Game</Link>
+      </div>
     </div>
   )
 }

@@ -102,7 +102,6 @@ function TicTacToe() {
   return(
     <div style={{textAlign:'center'}}>
       <div>Tic Tac Toe</div>
-      <div>Battle game</div>
       {(gameState == 'active')?createMatrix():gameOver()}
     </div>
   )

@@ -1,4 +1,6 @@
 import React, {useEffect,useState} from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faUsers, faUserFriends, faCode } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios';
 
 function Loading() {
@@ -18,30 +20,40 @@ function BattleGameResult(props) {
   const { username1, username2}  = props.location.state;
   const [loading, updateLoading ] = useState(true)
   const [users,updateUser] = useState([]);
-  const [user2,updateUser2] = useState([]);
   let winner = 0;
-  useEffect(()=>{
-    var id = "68f7121b3463423d9f90";
-    var sec = "7501c822adaf89df5e134e85a78d8505e43a054e";
-    var param = "?client_id=" + id + "&client_secret=" + sec;
+  const id = "68f7121b3463423d9f90";
+  const sec = "7501c822adaf89df5e134e85a78d8505e43a054e";
+  const param = "?client_id=" + id + "&client_secret=" + sec;
 
-    function getUserInfo (username1, username2) {
-      const P1 = axios.get('https:/api.github.com/users/' + username1 + param)
-      const P2 = axios.get('https:/api.github.com/users/' + username2 + param)
-      return Promise.all( [P1, P2] );
-    }
-    function getRepos (username1,username2) {
-      const P1 = axios.get('https:/api.github.com/users/' + username1 + '/repos' + param + '&per_page=100');
-      const P2 = axios.get('https:/api.github.com/users/' + username2 + '/repos' + param + '&per_page=100');
-      return Promise.all( [P1, P2] );
-    }
+  useEffect(()=>{
     getUserInfo(username1, username2).then((res)=>{
-      console.log(res)
       updateUser(...users,res);
       updateLoading(false);
     })
-
   },[]);
+
+  function getUserInfo (username1, username2) {
+    const P1 = axios.get('https:/api.github.com/users/' + username1 + param)
+    const P2 = axios.get('https:/api.github.com/users/' + username2 + param)
+    return Promise.all( [P1, P2] );
+  }
+
+  function getRepos (username) {
+    return axios.get('https:/api.github.com/users/' + username + '/repos' + param + '&per_page=100');
+  }
+
+  function showRepos(loginId) {
+    updateLoading(true);
+    getRepos(loginId).then((res)=> {
+      updateLoading(false);
+      return props.history.push({
+        pathname: '/battle-game/repos',
+        state: { 
+          repos:res.data,
+        }
+      });
+    })
+  }
 
   if(loading) {
     return (
@@ -49,34 +61,53 @@ function BattleGameResult(props) {
     )
   } else {
     return(
-      <div class="container">
+      <div class="container mt-4">
         <div className="row">
-          {users.map((user)=>{
+          {users.map((user,i)=>{
             const { data } = user;
-            winner = (winner<data.public_repos)?"Winner":"Loser";
+            let winnerLabel = "";
+            console.log(data.public_repos)
+            if(winner < data.public_repos) {
+              console.log("true")
+              winner = data.public_repos;
+              winnerLabel = "Winner"
+            } else{
+              winnerLabel = "Loser"
+            }
             return (
               <div class="col-lg-6">
-                <div class="card" style={{width:'18rem'}}>
-                  <div>{winner}</div>
-                  <img src={data.avatar_url} class="card-img-top" alt="..." />
-                  <div class="card-body">
-                    <h5 class="card-title">
-                    {data.login}
-                    </h5>
+                <div class="p-4" style={{width:"200px",backgroundColor:"#EBEBEB",margin:"auto",float:(i%2)?"left":'right'}}>
+                  <div class="text-center h5">{winnerLabel}</div>
+                  <div class="pl-3 pr-3">
+                    <img class="p-3" src={data.avatar_url} class="card-img-top" alt="..." />
                   </div>
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item">{data.name}</li>
-                    <li class="list-group-item">{data.followers} followers</li>
-                    <li class="list-group-item">{data.following} following</li>
-                    <li class="list-group-item">{data.public_repos} repositories</li>
-                  </ul>
+                  <div class="text-center" style={{color:'red',fontWeight:'bold'}}>{data.login}</div>
+                    <div>
+                      <FontAwesomeIcon style={{color:"#F07373",width:'20px'}} icon={faUser} />
+                      <span class="pl-2">{data.name}</span>
+                    </div>
+                    <div>
+                      <FontAwesomeIcon style={{color:"#81C3F5",width:'20px'}} icon={faUsers} />
+                      <span class="pl-2 pr-1">{data.followers}</span>
+                      followers
+                    </div>
+                    <div>
+                      <FontAwesomeIcon style={{color:"#ccc",width:'20px'}} icon={faUserFriends} />
+                      <span class="pl-2 pr-1">{data.following}</span>
+                      following
+                    </div>
+                    <div style={{cursor:'pointer'}} onClick={()=> showRepos(data.login)}> 
+                      <FontAwesomeIcon style={{color:"#000",width:'20px'}} icon={faCode} />
+                      <span class="pl-2 pr-1">{data.public_repos}</span>
+                      repositories
+                    </div>
                 </div>
               </div>
             )
         })}
         </div>
         <div style={{clear:'both'}} class="text-center pt-2">
-          <button type="button" class="btn btn-success" onClick={()=> props.history.push('/battle-game')}>Reset</button>
+          <button type="button" class="btn" style={{backgroundColor:"#000",color:"#fff",width:"170px",letterSpacing:"3px"}} onClick={()=> props.history.push('/battle-game')}>RESET</button>
         </div>
       </div>
     )

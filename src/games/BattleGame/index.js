@@ -38,7 +38,7 @@ function BattleGame(props) {
           </div>
         </div>
         <div style={{clear:'both'}} class="text-center pt-2">
-          <button type="button" class="btn btn-success" onClick={()=> handleClick(history,username1,username2)}>Success</button>
+          <button type="button" class="btn" style={{backgroundColor:"#000",color:"#fff",width:"170px",letterSpacing:"3px"}} onClick={()=> handleClick(history,username1,username2)}>SUBMIT</button>
         </div>
       </div>
     </div>
